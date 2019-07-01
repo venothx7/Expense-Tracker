@@ -1,0 +1,31 @@
+
+<a routerLink="/expenses/add" class="btn btn-success" routerLinkActive="active">
+          Add Expense
+        </a>
+<table class="table table-hover table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr scope="col">
+            <th >id</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Edit/Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let e of expenses; let i = index;">
+            <th scope="row"> {{ i }} </th>
+            <td>{{ e.description }}</td>
+            <td>${{ e.amount }}</td>
+            <td>{{ e.date }}</td>
+            <td>{{ e.types }}</td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                <a [routerLink]="['/expenses/edit/', e._id]" class="btn btn-primary">Edit</a>
+                <a (click) = "deleteExpense(e._id)" class="btn btn-danger">Delete</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
