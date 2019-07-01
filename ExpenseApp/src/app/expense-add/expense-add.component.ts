@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup,  FormBuilder,  Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ExpenseService } from '../services/expense.service';
 
 @Component({
@@ -12,7 +13,10 @@ export class ExpenseAddComponent implements OnInit {
   angForm: FormGroup;
   // submitted = false;
 
-  constructor(private fb: FormBuilder, private expenseService: ExpenseService) {
+  constructor(private fb: FormBuilder,
+              private expenseService: ExpenseService,
+              private _router: Router,
+              private route: ActivatedRoute) {
     this.createForm();
   }
 
@@ -31,7 +35,15 @@ export class ExpenseAddComponent implements OnInit {
   get f() {return this.angForm.controls; }
 
   addExpense(description, amount, date, types){
-    this.expenseService.addExpense(description, amount, date, types);
+    this.route.params.subscribe(params => {
+      this.expenseService.addExpense(description, amount, date, types)
+      .subscribe((data: string) => {
+        console.log(data);
+        this._router.navigate(['expenses']);
+      }) ;
+
+    });
+    // this._router.navigateByUrl('/expenses');
   }
 
 }

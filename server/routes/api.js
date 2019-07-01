@@ -31,7 +31,7 @@ const Expense = require('../models/Expense');
 // @route GET api/expenses
 // @desc Gets all expenses
 // @access private
-router.get('/expense', verifyToken, (req, res) => {
+router.get('/expense', (req, res) => {
     Expense.find()
         .then(expenses => res.json(expenses))
         .catch(err => res.status(400).send(err));

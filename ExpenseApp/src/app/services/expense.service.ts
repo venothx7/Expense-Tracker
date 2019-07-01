@@ -12,12 +12,12 @@ export class ExpenseService {
   addExpense(description, amount, date, types) {
     // console.log("made it here");
     const obj = { description, amount, date, types };
-    console.log(obj);
-    this.http.post(`${this.uri}/expense/add`, obj)
-        .subscribe(res => console.log('Added'));
+    // console.log(obj);
+    return this.http.post(`${this.uri}/expense/add`, obj);
+        // .subscribe(res => console.log('Added'));
   }
   getExpenses() {
-    return this.http.get(`${this.uri}/expense`); 
+    return this.http.get(`${this.uri}/expense`);
   }
 
   editExpense(id: any) {

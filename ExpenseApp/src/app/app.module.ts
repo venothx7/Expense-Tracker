@@ -9,13 +9,21 @@ import { ExpenseListComponent } from './expense-list/expense-list.component';
 import { ExpenseAddComponent } from './expense-add/expense-add.component';
 import { ExpenseEditComponent } from './expense-edit/expense-edit.component';
 import { ExpenseService} from './services/expense.service';
+import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './login/login.component';
+import { AuthService } from './services/auth.service';
+// import { TokenInterceptorService } from './services/token-interceptor.service';
+import { AuthGuard } from './guards/auth.guard';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     ExpenseListComponent,
     ExpenseAddComponent,
-    ExpenseEditComponent
+    ExpenseEditComponent,
+    RegisterComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +31,7 @@ import { ExpenseService} from './services/expense.service';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [ExpenseService],
+  providers: [ExpenseService, AuthService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
