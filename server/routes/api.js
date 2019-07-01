@@ -2,7 +2,26 @@
 
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
+
+function verifyToken(req, res, next) {
+    if (!req.headers.authorization) {
+        return res.status(401).send("Unauthroized request")
+    }
+    //split it into array and get the 2nd value of the array
+    let token = req.headers.authorization.split(' ')[1]
+    if (token === 'null') {
+        return res.status(401).send("Unauthroized request")
+    }
+    let payload = jwt.verify(token, 'secretKey');
+    if (!payload) {
+        return res.status(401).send("Unauthroized request")
+    }
+    //reach this part if evrytin is valid
+    req.userId = payload.subject
+    next()
+}
 
 // Expense Routes
 
@@ -11,8 +30,8 @@ const Expense = require('../models/Expense');
 
 // @route GET api/expenses
 // @desc Gets all expenses
-// @access Public
-router.get('/expense', (req, res) => {
+// @access private
+router.get('/expense', verifyToken, (req, res) => {
     Expense.find()
         .then(expenses => res.json(expenses))
         .catch(err => res.status(400).send(err));
@@ -79,20 +98,6 @@ router.delete('/expense/delete/:id', (req, res) => {
         .catch(err => res.status(404).send(err));
 });
 
-
-// // @route POST api/expense
-// // @desc Create a expense
-// // @access Public
-// router.put('/expense/update/:id', (req, res) => {
-//     const expenseID = req.params.id;
-//     const userInput = new Expense({
-//         description: req.body.description,
-//         amount: req.body.amount,
-//         date: req.body.date,
-//         types: req.body.types
-//     });
-// });
-
 //User Routes
 //User Model
 const User = require('../models/User');
@@ -118,10 +123,39 @@ router.post('/user/register', (req, res) => {
     //saved the new user data to db, 
     //on success send back to server the new user data
     newUser.save()
-        .then(user => res.status(200).json(user))
+        .then(user => {
+            let payload = { subject: user._id };
+            let token = jwt.sign(payload, 'secretKey');
+            res.status(200).send({ token })
+        })
         .catch(err => res.status(400).send(err));
+
+
 });
 
+// @route POST api/user/login
+// @desc login
+// @access Public
+router.post('/user/login', (req, res) => {
+    let userData = req.body;
+    User.findOne({ email: userData.email }, (error, user) => {
+        if (error) {
+            console.log(error);
+        } else {
+            if (!user) {
+                res.status(401).send("Invalid email");
+            } else { // found user, check if passwords match
+                if (user.password !== userData.password) {
+                    res.status(401).send("Invalid Password");
+                } else { // found user and password match
+                    let payload = { subject: user._id };
+                    let token = jwt.sign(payload, 'secretKey')
+                    res.status(200).send({ token });
+                }
+            }
+        }
+    })
+})
 
 
 module.exports = router;
